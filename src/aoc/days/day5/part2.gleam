@@ -72,31 +72,28 @@ fn is_valid_update(update: List(Int), rules: RuleList) {
 }
 
 fn fix_update(update: List(Int), rules: RuleList) {
-  case do_fix_update(update, rules, []) {
+  case do_fix_update(update, [], rules) {
     // we may need more than one pass to fix it
     result if result != update -> fix_update(result, rules)
     result -> result
   }
 }
 
-fn do_fix_update(update: List(Int), rules: RuleList, new_update: List(Int)) {
+fn do_fix_update(update: List(Int), fixed_update: List(Int), rules: RuleList) {
   case update {
     [a, b, ..rest] -> {
       let rule = dict.get(rules, b)
       case rule {
         Ok(rule) -> {
           case list.contains(rule, a) {
-            True ->
-              do_fix_update([a, ..rest], rules, list.flatten([new_update, [b]]))
-            False ->
-              do_fix_update([b, ..rest], rules, list.flatten([new_update, [a]]))
+            True -> do_fix_update([a, ..rest], [b, ..fixed_update], rules)
+            False -> do_fix_update([b, ..rest], [a, ..fixed_update], rules)
           }
         }
-        Error(_) ->
-          do_fix_update([b, ..rest], rules, list.flatten([new_update, [a]]))
+        Error(_) -> do_fix_update([b, ..rest], [a, ..fixed_update], rules)
       }
     }
-    [x] -> list.flatten([new_update, [x]])
+    [x] -> [x, ..fixed_update] |> list.reverse()
     [] -> panic as "list cannot be empty"
   }
 }
