@@ -56,38 +56,31 @@ fn is_report_safe(report: Report) {
 }
 
 fn is_report_increasing(report: Report) {
-  check(report, fn(a, b) { b > a })
+  case report {
+    [a, b, ..rest] -> b > a && is_report_increasing([b, ..rest])
+    [] -> True
+    [_] -> True
+  }
 }
 
 fn is_report_decreasing(report: Report) {
-  check(report, fn(a, b) { b < a })
+  case report {
+    [a, b, ..rest] -> b < a && is_report_decreasing([b, ..rest])
+    [] -> True
+    [_] -> True
+  }
 }
 
 fn is_report_diffs_acceptable(report: Report) {
-  check(report, fn(a, b) {
-    let diff = int.absolute_value(a - b)
-    diff >= 1 && diff <= 3
-  })
+  case report {
+    [a, b, ..rest] ->
+      is_diff_acceptable(a, b) && is_report_diffs_acceptable([b, ..rest])
+    [] -> True
+    [_] -> True
+  }
 }
 
-fn check(report: Report, fun: fn(Int, Int) -> Bool) {
-  let #(is_valid, _) =
-    report
-    |> list.index_map(fn(x, i) { #(i, x) })
-    |> list.fold_until(#(True, 0), fn(acc, item) {
-      let #(index, value) = item
-      let #(_, prev) = acc
-
-      case index == 0 {
-        True -> Continue(#(True, value))
-        False -> {
-          case fun(value, prev) {
-            True -> Continue(#(True, value))
-            False -> Stop(#(False, value))
-          }
-        }
-      }
-    })
-
-  is_valid
+fn is_diff_acceptable(a: Int, b: Int) {
+  let diff = int.absolute_value(a - b)
+  diff >= 1 && diff <= 3
 }
