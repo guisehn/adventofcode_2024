@@ -58,12 +58,8 @@ fn parse_updates(lines: String) -> List(List(Int)) {
 fn is_valid_update(update: List(Int), rules: RuleList) {
   case update {
     [a, b, ..rest] -> {
-      let rule = dict.get(rules, b)
-      case rule {
-        Ok(rule) ->
-          !list.contains(rule, a) && is_valid_update([b, ..rest], rules)
-        Error(_) -> is_valid_update([b, ..rest], rules)
-      }
+      let rule = dict.get(rules, b) |> result.unwrap([])
+      !list.contains(rule, a) && is_valid_update([b, ..rest], rules)
     }
 
     [_] -> True
@@ -82,15 +78,10 @@ fn fix_update(update: List(Int), rules: RuleList) {
 fn do_fix_update(update: List(Int), fixed_update: List(Int), rules: RuleList) {
   case update {
     [a, b, ..rest] -> {
-      let rule = dict.get(rules, b)
-      case rule {
-        Ok(rule) -> {
-          case list.contains(rule, a) {
-            True -> do_fix_update([a, ..rest], [b, ..fixed_update], rules)
-            False -> do_fix_update([b, ..rest], [a, ..fixed_update], rules)
-          }
-        }
-        Error(_) -> do_fix_update([b, ..rest], [a, ..fixed_update], rules)
+      let rule = dict.get(rules, b) |> result.unwrap([])
+      case list.contains(rule, a) {
+        True -> do_fix_update([a, ..rest], [b, ..fixed_update], rules)
+        False -> do_fix_update([b, ..rest], [a, ..fixed_update], rules)
       }
     }
     [x] -> [x, ..fixed_update] |> list.reverse()
