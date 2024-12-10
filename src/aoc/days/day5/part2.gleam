@@ -19,7 +19,8 @@ pub fn solve() {
   let input = parse_input(input)
 
   input.updates
-  |> list.filter(fn(update) { is_valid_update(update, input.rules) })
+  |> list.filter(fn(update) { !is_valid_update(update, input.rules) })
+  |> list.map(fn(update) { fix_update(update, input.rules) })
   |> list.map(get_middle_page_number)
   |> list.reduce(fn(a, b) { a + b })
   |> result.unwrap(0)
@@ -67,6 +68,36 @@ fn is_valid_update(update: List(Int), rules: RuleList) {
 
     [_] -> True
     [] -> True
+  }
+}
+
+fn fix_update(update: List(Int), rules: RuleList) {
+  case do_fix_update(update, rules, []) {
+    // we may need more than one pass to fix it
+    result if result != update -> fix_update(result, rules)
+    result -> result
+  }
+}
+
+fn do_fix_update(update: List(Int), rules: RuleList, new_update: List(Int)) {
+  case update {
+    [a, b, ..rest] -> {
+      let rule = dict.get(rules, b)
+      case rule {
+        Ok(rule) -> {
+          case list.contains(rule, a) {
+            True ->
+              do_fix_update([a, ..rest], rules, list.flatten([new_update, [b]]))
+            False ->
+              do_fix_update([b, ..rest], rules, list.flatten([new_update, [a]]))
+          }
+        }
+        Error(_) ->
+          do_fix_update([b, ..rest], rules, list.flatten([new_update, [a]]))
+      }
+    }
+    [x] -> list.flatten([new_update, [x]])
+    [] -> panic as "list cannot be empty"
   }
 }
 

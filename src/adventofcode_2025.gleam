@@ -7,6 +7,7 @@ import aoc/days/day3/part2 as day3_part2
 import aoc/days/day4/part1 as day4_part1
 import aoc/days/day4/part2 as day4_part2
 import aoc/days/day5/part1 as day5_part1
+import aoc/days/day5/part2 as day5_part2
 import argv
 import gleam/io
 
@@ -25,6 +26,7 @@ pub fn main() {
     ["4", "2"] -> day4_part2.solve()
 
     ["5", "1"] -> day5_part1.solve()
+    ["5", "2"] -> day5_part2.solve()
 
     [_, _] -> "day or part not found"
     _ -> "usage: ./gleam run 1 1"
