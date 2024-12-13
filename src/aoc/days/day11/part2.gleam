@@ -1,6 +1,8 @@
+import gleam/dict.{type Dict}
 import gleam/float
 import gleam/int
 import gleam/list
+import gleam/option.{None, Some}
 import gleam/result
 import gleam/string
 import simplifile
@@ -11,38 +13,52 @@ pub fn solve() {
   input
   |> parse_input
   |> blink_many(75)
-  |> list.length
+  |> dict.to_list()
+  |> list.map(fn(stone) -> Int { stone.1 })
+  |> list.reduce(fn(a, b) { a + b })
+  |> result.unwrap(0)
   |> int.to_string
 }
 
-fn blink_many(stones: List(Int), times: Int) -> List(Int) {
+fn blink_many(stones: Dict(Int, Int), times: Int) -> Dict(Int, Int) {
   list.range(1, times)
   |> list.fold(stones, fn(stones, _) { blink(stones) })
 }
 
-fn blink(stones: List(Int)) -> List(Int) {
+fn blink(stones: Dict(Int, Int)) -> Dict(Int, Int) {
   stones
-  |> list.fold(from: [], with: fn(new_stones, stone) {
+  |> dict.fold(from: dict.new(), with: fn(new_stones, stone, count) {
     case stone {
-      0 -> [1, ..new_stones]
+      0 -> add(new_stones, 1, count)
       _ ->
         case has_even_digits(stone) {
           True -> {
             let #(a, b) = split_num(stone)
-            [b, a, ..new_stones]
+            new_stones
+            |> add(a, count)
+            |> add(b, count)
           }
-          False -> [stone * 2024, ..new_stones]
+          False -> add(new_stones, stone * 2024, count)
         }
     }
   })
-  |> list.reverse()
 }
 
-fn parse_input(input: String) -> List(Int) {
+fn add(stones: Dict(Int, Int), stone: Int, count: Int) -> Dict(Int, Int) {
+  dict.upsert(stones, stone, fn(x) {
+    case x {
+      Some(i) -> i + count
+      None -> count
+    }
+  })
+}
+
+fn parse_input(input: String) -> Dict(Int, Int) {
   input
   |> string.trim
   |> string.split(" ")
-  |> list.map(to_int)
+  |> list.map(fn(str) { #(to_int(str), 1) })
+  |> dict.from_list
 }
 
 fn has_even_digits(n: Int) {
