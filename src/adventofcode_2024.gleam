@@ -15,6 +15,7 @@ import aoc/days/day6/part1 as day6_part1
 import aoc/days/day6/part2 as day6_part2
 import aoc/days/day7/part1 as day7_part1
 import aoc/days/day7/part2 as day7_part2
+import aoc/days/day9/part1 as day9_part1
 import argv
 import gleam/io
 
@@ -40,6 +41,8 @@ pub fn main() {
 
     ["7", "1"] -> day7_part1.solve()
     ["7", "2"] -> day7_part2.solve()
+
+    ["9", "1"] -> day9_part1.solve()
 
     ["11", "1"] -> day11_part1.solve()
     ["11", "2"] -> day11_part2.solve()
