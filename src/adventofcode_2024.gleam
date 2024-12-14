@@ -20,6 +20,7 @@ import aoc/days/day6/part2 as day6_part2
 import aoc/days/day7/part1 as day7_part1
 import aoc/days/day7/part2 as day7_part2
 import aoc/days/day8/part1 as day8_part1
+import aoc/days/day8/part2 as day8_part2
 import aoc/days/day9/part1 as day9_part1
 import aoc/days/day9/part2 as day9_part2
 import argv
@@ -49,6 +50,7 @@ pub fn main() {
     ["7", "2"] -> day7_part2.solve()
 
     ["8", "1"] -> day8_part1.solve()
+    ["8", "2"] -> day8_part2.solve()
 
     ["9", "1"] -> day9_part1.solve()
     ["9", "2"] -> day9_part2.solve()
