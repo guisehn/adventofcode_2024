@@ -30,7 +30,6 @@ fn get_all_antinode_coords(antenna_coords: List(Coord), width: Int, height: Int)
   |> list.flat_map(fn(pair) {
     get_antinode_coords(pair.0, pair.1, width, height)
   })
-  |> list.filter(fn(coord) { is_valid_coord(coord, width, height) })
 }
 
 fn get_antinode_coords(
