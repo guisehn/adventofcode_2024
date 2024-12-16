@@ -22,9 +22,7 @@ type Direction {
 pub fn solve() {
   let assert Ok(input) = simplifile.read("src/aoc/days/day15/input.txt")
 
-  let #(map, moves, robot_coord) =
-    input
-    |> parse_input
+  let #(map, moves, robot_coord) = parse_input(input)
 
   let #(_, map) =
     moves

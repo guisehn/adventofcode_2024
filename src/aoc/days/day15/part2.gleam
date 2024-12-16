@@ -22,9 +22,7 @@ type Direction {
 pub fn solve() {
   let assert Ok(input) = simplifile.read("src/aoc/days/day15/input.txt")
 
-  let #(map, moves, robot_coord) =
-    input
-    |> parse_input
+  let #(map, moves, robot_coord) = parse_input(input)
 
   let #(_, map, _) =
     moves
@@ -69,36 +67,27 @@ fn attempt_move(map: Map, coord: Coord, direction: Direction) -> #(Bool, Map) {
       let #(x, y) = coord
       let next_coord_left = calc_next_coord(coord, direction)
       let next_coord_right = calc_next_coord(#(x + 1, y), direction)
-      let assert Ok(char_left) = dict.get(map, next_coord_left)
-      let assert Ok(char_right) = dict.get(map, next_coord_right)
-      case char_left, char_right {
-        "#", _ | _, "#" -> {
-          #(False, map)
-        }
-        _, _ -> {
-          case attempt_move(map, next_coord_left, direction) {
+      case attempt_move(map, next_coord_left, direction) {
+        #(True, new_map) -> {
+          case attempt_move(new_map, next_coord_right, direction) {
             #(True, new_map) -> {
-              case attempt_move(new_map, next_coord_right, direction) {
-                #(True, new_map) -> {
-                  let new_map =
-                    new_map
-                    |> dict.insert(coord, ".")
-                    |> dict.insert(#(x + 1, y), ".")
-                    |> dict.insert(next_coord_left, "[")
-                    |> dict.insert(next_coord_right, "]")
-                  #(True, new_map)
-                }
-
-                #(False, _) -> #(False, map)
-              }
+              let new_map =
+                new_map
+                |> dict.insert(coord, ".")
+                |> dict.insert(#(x + 1, y), ".")
+                |> dict.insert(next_coord_left, "[")
+                |> dict.insert(next_coord_right, "]")
+              #(True, new_map)
             }
+
             #(False, _) -> #(False, map)
           }
         }
+        #(False, _) -> #(False, map)
       }
     }
     "]" if direction == Up || direction == Down -> {
-      // move left part of box instead [, we can centralize all logic in its clause
+      // run it for left part of box instead [, we centralize all logic in its clause
       let #(x, y) = coord
       attempt_move(map, #(x - 1, y), direction)
     }
