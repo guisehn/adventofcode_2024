@@ -12,6 +12,8 @@ import aoc/days/day14/part2 as day14_part2
 import aoc/days/day15/part1 as day15_part1
 import aoc/days/day15/part2 as day15_part2
 import aoc/days/day17/part1 as day17_part1
+import aoc/days/day18/part1 as day18_part1
+import aoc/days/day18/part2 as day18_part2
 import aoc/days/day2/part1 as day2_part1
 import aoc/days/day2/part2 as day2_part2
 import aoc/days/day3/part1 as day3_part1
@@ -78,6 +80,9 @@ pub fn main() {
     ["15", "2"] -> day15_part2.solve()
 
     ["17", "1"] -> day17_part1.solve()
+
+    ["18", "1"] -> day18_part1.solve()
+    ["18", "2"] -> day18_part2.solve()
 
     [_, _] -> "day or part not found"
     _ -> "usage: ./gleam run 1 1"
