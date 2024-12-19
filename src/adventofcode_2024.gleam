@@ -11,6 +11,7 @@ import aoc/days/day14/part1 as day14_part1
 import aoc/days/day14/part2 as day14_part2
 import aoc/days/day15/part1 as day15_part1
 import aoc/days/day15/part2 as day15_part2
+import aoc/days/day16/part1 as day16_part1
 import aoc/days/day17/part1 as day17_part1
 import aoc/days/day18/part1 as day18_part1
 import aoc/days/day18/part2 as day18_part2
@@ -78,6 +79,8 @@ pub fn main() {
 
     ["15", "1"] -> day15_part1.solve()
     ["15", "2"] -> day15_part2.solve()
+
+    ["16", "1"] -> day16_part1.solve()
 
     ["17", "1"] -> day17_part1.solve()
 
