@@ -2,7 +2,7 @@ import gleam/deque.{type Deque}
 import gleam/dict.{type Dict}
 import gleam/int
 import gleam/list
-import gleam/option.{None, Some}
+import gleam/option.{Some}
 import gleam/regexp.{Match}
 import gleam/result
 import gleam/set.{type Set}
@@ -55,16 +55,10 @@ fn calc_all_operations(registers: Registers, operations: List(Operation)) {
     |> list.fold(from: dict.new(), with: fn(acc, op) {
       acc
       |> dict.upsert(op.a, fn(cur) {
-        case cur {
-          Some(ops) -> set.insert(ops, op)
-          None -> set.new() |> set.insert(op)
-        }
+        cur |> option.unwrap(set.new()) |> set.insert(op)
       })
       |> dict.upsert(op.b, fn(cur) {
-        case cur {
-          Some(ops) -> set.insert(ops, op)
-          None -> set.new() |> set.insert(op)
-        }
+        cur |> option.unwrap(set.new()) |> set.insert(op)
       })
     })
 
