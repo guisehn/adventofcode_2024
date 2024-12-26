@@ -1,15 +1,15 @@
-import aoc/days/day21/directions.{
-  type DirectionButton, type DirectionalPathDict, type NumericPathDict, A,
-  directional_keyboard_path_dict, numeric_keypad_path_dict,
-}
 import gleam/dict
 import gleam/int
-import gleam/io
 import gleam/list
 import gleam/regexp
 import gleam/result
 import gleam/string
 import simplifile
+
+import aoc/days/day21/directions.{
+  type DirectionButton, type DirectionalPathDict, type NumericPathDict, A,
+  directional_keyboard_path_dict, numeric_keypad_path_dict,
+}
 
 pub fn solve() {
   let assert Ok(input) = simplifile.read("src/aoc/days/day21/input.txt")
@@ -20,61 +20,49 @@ pub fn solve() {
 
   codes
   |> list.map(fn(code) {
-    io.println(code)
-
-    let button_presses =
+    let assert Ok(min_button_presses) =
       code
       |> directional_to_numeric_keypad(numeric_keypad_path_dict)
-      |> debug
-      |> directional_to_directional_keypad(direction_keypad_path_dict)
-      |> debug
-      |> directional_to_directional_keypad(direction_keypad_path_dict)
-      |> debug
-      |> list.length
+      |> list.map(fn(possibilities) {
+        possibilities
+        |> directional_to_directional_keypad(direction_keypad_path_dict)
+        |> directional_to_directional_keypad(direction_keypad_path_dict)
+        |> list.length
+      })
+      |> list.sort(by: int.compare)
+      |> list.first
 
-    io.println(
-      string.inspect(button_presses)
-      <> " * "
-      <> string.inspect(get_code_numeric_path(code)),
-    )
-
-    io.println("====================================")
-
-    button_presses * get_code_numeric_path(code)
+    min_button_presses * get_code_numeric_path(code)
   })
   |> list.reduce(fn(a, b) { a + b })
   |> result.unwrap(0)
   |> int.to_string
 }
 
-fn debug(l: List(_)) {
-  io.println(string.inspect(list.length(l)) <> " - " <> string.inspect(l))
-  io.println("--------------------")
-  l
-}
+pub fn directional_to_numeric_keypad(code: String, path_dict: NumericPathDict) {
+  // let k: #(String, List(List(DirectionButton))) = #("A", [])
 
-pub fn directional_to_numeric_keypad(
-  code: String,
-  path_dict: NumericPathDict,
-) -> List(DirectionButton) {
-  let #(_, path) =
+  let #(_, paths) =
     code
     |> string.split("")
-    |> list.fold(from: #("A", []), with: fn(acc, current_digit) {
-      let #(prev_digit, prev_directions) = acc
+    |> list.fold(from: #("A", [[]]), with: fn(acc, current_digit) {
+      let #(prev_digit, prev_paths) = acc
 
-      // io.println(
-      //   "looking for " <> current_digit <> ", previous digit " <> prev_digit,
-      // )
+      let assert Ok(next_paths) = dict.get(path_dict, prev_digit)
+      let assert Ok(next_paths) = dict.get(next_paths, current_digit)
 
-      let assert Ok(paths) = dict.get(path_dict, prev_digit)
-      let assert Ok(path) = dict.get(paths, current_digit)
-      let path = list.flatten([path, [A]])
+      let next_paths =
+        list.map(next_paths, fn(path) { list.flatten([path, [A]]) })
 
-      #(current_digit, [path, ..prev_directions])
+      let new_paths =
+        list.flat_map(prev_paths, fn(prev_path) {
+          list.map(next_paths, fn(path) { list.flatten([prev_path, path]) })
+        })
+
+      #(current_digit, new_paths)
     })
 
-  path |> list.reverse |> list.flatten
+  paths
 }
 
 pub fn directional_to_directional_keypad(
